@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: redis-server
-          image: metacoding/redis:1
+          image: 842903729788.dkr.ecr.ap-northeast-2.amazonaws.com/metacoding-redis:1
           ports:
             - containerPort: 6379
 

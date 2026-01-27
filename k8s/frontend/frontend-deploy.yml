@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend-server
-          image: metacoding/frontend:1
+          image: 842903729788.dkr.ecr.ap-northeast-2.amazonaws.com/metacoding-frontend:1
           ports:
             - containerPort: 80
 

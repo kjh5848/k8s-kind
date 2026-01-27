@@ -73,6 +73,8 @@
    - `kind load docker-image metacoding/frontend:1 --name metacoding`
    - `kind load docker-image metacoding/redis:1 --name metacoding`
 4. 네임스페이스 및 리소스 적용
+   - kind에서는 `k8s/backend/backend-configmap.yml`의 DB URL을 `db-service`로 맞춰주세요.
+     - 예: `jdbc:mysql://db-service:3306/metadb?...`
    - `kubectl apply -f k8s/namespace.yml`
    - `kubectl apply -f k8s/ --recursive`
 5. 접속
@@ -111,7 +113,32 @@
    - 예: `metacoding/backend:1` -> `842903729788.dkr.ecr.ap-northeast-2.amazonaws.com/metacoding-backend:1`
 3. 리소스 적용
    - `kubectl apply -f k8s/namespace.yml`
-   - `kubectl apply -f k8s/ --recursive`
+   - DB를 **클러스터 내부에 둘 때만** `k8s/db`를 적용합니다.
+   - RDS 사용 시 (권장):
+     - `kubectl apply -f k8s/backend/`
+     - `kubectl apply -f k8s/frontend/`
+     - `kubectl apply -f k8s/redis/`
+     - `kubectl apply -f k8s/ingress/` (Ingress 사용 시)
+   - 클러스터 내부 DB 사용 시:
+     - `kubectl apply -f k8s/ --recursive`
+
+### 3-1. RDS 사용으로 전환 (권장)
+
+1. RDS MySQL 생성
+   - EKS와 **같은 VPC/Subnet**에 생성
+   - 보안 그룹 인바운드에 `3306` 허용 (EKS 노드/클러스터 보안 그룹에서 접근 가능하도록)
+2. 백엔드 DB 접속 정보 설정
+   - `k8s/backend/backend-configmap.yml`의 `SPRING_DATASOURCE_URL`을 RDS 엔드포인트로 변경
+     - 예: `jdbc:mysql://YOUR_RDS_ENDPOINT:3306/metadb?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true`
+   - `k8s/backend/backend-secret.yml`의 `SPRING_DATASOURCE_USERNAME / SPRING_DATASOURCE_PASSWORD`를 RDS 계정으로 변경
+3. 클러스터에 적용
+   - `kubectl apply -f k8s/namespace.yml`
+   - `kubectl apply -f k8s/backend/`
+   - `kubectl apply -f k8s/frontend/`
+   - `kubectl apply -f k8s/redis/`
+   - `kubectl apply -f k8s/ingress/` (Ingress 사용 시)
+4. (이미 DB 리소스를 적용했다면) 내부 DB 삭제
+   - `kubectl delete -f k8s/db/ --recursive`
 
 ### 4. Service LoadBalancer로 외부 접속 (프론트 단일 노출)
 
@@ -171,7 +198,7 @@ python -m awscli eks update-kubeconfig --name metacoding --region ap-northeast-2
 
 - kind는 로컬 노드 컨테이너에 이미지를 로드해야 합니다.
 - EKS는 이미지가 ECR에 있어야 하며, 이미지 경로를 반드시 ECR로 변경해야 합니다.
-- PV의 `hostPath`는 EKS에서 권장되지 않습니다. 실제 EKS에서는 EBS 기반 스토리지 클래스를 사용하는 것이 일반적입니다.
+- PV의 `hostPath`는 EKS에서 권장되지 않습니다. 실제 EKS에서는 EBS 기반 스토리지 클래스를 사용하거나 **RDS로 분리**하는 것이 일반적입니다.
 - 서비스 노출은 EKS에서 Ingress나 LoadBalancer로 변경하는 것이 일반적입니다.
 - Ingress는 컨트롤러 설치가 필요합니다. kind는 ingress-nginx, EKS는 ALB/NGINX 중 선택해서 구성하세요.
 

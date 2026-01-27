@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name: backend-server
-          image: metacoding/backend:1
+          image: 842903729788.dkr.ecr.ap-northeast-2.amazonaws.com/metacoding-backend:1
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           envFrom:
