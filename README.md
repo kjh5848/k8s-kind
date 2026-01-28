@@ -202,6 +202,13 @@ python -m awscli eks update-kubeconfig --name metacoding --region ap-northeast-2
 - 서비스 노출은 EKS에서 Ingress나 LoadBalancer로 변경하는 것이 일반적입니다.
 - Ingress는 컨트롤러 설치가 필요합니다. kind는 ingress-nginx, EKS는 ALB/NGINX 중 선택해서 구성하세요.
 
+## 실습 자료: EKS + RDS (UI/CLI 단계별)
+
+처음부터 다시 해도 성공하도록 UI/CLI 단계와 명령어 설명을 정리한 실습 자료입니다.  
+머메이드 다이어그램 포함.
+
+- `docs/eks-rds-lab.md`
+
 ## Service 노출 방식 비교: LoadBalancer vs ALB Ingress
 
 ### 요약
