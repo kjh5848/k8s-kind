@@ -1,0 +1,22 @@
+apiVersion: v1 # Kubernetes API version
+kind: ConfigMap # Resource type
+metadata: # Object metadata
+  name: prometheus-config # ConfigMap name
+  namespace: monitoring # Target namespace
+data:
+  prometheus.yml: | # Prometheus config file
+    global: # Global settings
+      scrape_interval: 15s # Default scrape interval
+
+    scrape_configs: # Scrape jobs
+      - job_name: "kubernetes-nodes" # Node metrics job
+        kubernetes_sd_configs: # Kubernetes service discovery
+          - role: node # Discover nodes
+
+      - job_name: "kubernetes-pods" # Pod metrics job
+        kubernetes_sd_configs: # Kubernetes service discovery
+          - role: pod # Discover pods
+        relabel_configs: # Filter targets by annotation
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape] # Annotation key
+            action: keep # Keep matching targets
+            regex: "true" # Only scrape when true

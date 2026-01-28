@@ -208,6 +208,7 @@ python -m awscli eks update-kubeconfig --name metacoding --region ap-northeast-2
 머메이드 다이어그램 포함.
 
 - `docs/eks-rds-lab.md`
+- `docs/architecture.md` (로컬/kind vs EKS 전체 구조)
 
 ## Service 노출 방식 비교: LoadBalancer vs ALB Ingress
 

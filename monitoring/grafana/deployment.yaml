@@ -1,0 +1,27 @@
+apiVersion: apps/v1 # Kubernetes API version
+kind: Deployment # Resource type
+metadata: # Object metadata
+  name: grafana # Deployment name
+  namespace: monitoring # Target namespace
+spec:
+  replicas: 1 # Single replica for lab
+  selector: # Pod selector
+    matchLabels:
+      app: grafana # Label selector
+  template:
+    metadata: # Pod template metadata
+      labels:
+        app: grafana # Pod label
+    spec:
+      containers:
+        - name: grafana # Container name
+          image: grafana/grafana:10.4.2 # Grafana image
+          ports:
+            - containerPort: 3000 # Grafana port
+          volumeMounts:
+            - name: datasources # Volume name
+              mountPath: /etc/grafana/provisioning/datasources # Datasource path
+      volumes:
+        - name: datasources # Volume name
+          configMap:
+            name: grafana-datasources # ConfigMap ref

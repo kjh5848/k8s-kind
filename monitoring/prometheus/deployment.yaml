@@ -1,0 +1,30 @@
+apiVersion: apps/v1 # Kubernetes API version
+kind: Deployment # Resource type
+metadata: # Object metadata
+  name: prometheus # Deployment name
+  namespace: monitoring # Target namespace
+spec:
+  replicas: 1 # Single replica for lab
+  selector: # Pod selector
+    matchLabels:
+      app: prometheus # Label selector
+  template:
+    metadata: # Pod template metadata
+      labels:
+        app: prometheus # Pod label
+    spec:
+      serviceAccountName: prometheus # Use Prometheus SA
+      containers:
+        - name: prometheus # Container name
+          image: prom/prometheus:v2.52.0 # Prometheus image
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml" # Config path
+          ports:
+            - containerPort: 9090 # Prometheus port
+          volumeMounts:
+            - name: config # Volume name
+              mountPath: /etc/prometheus # Mount path
+      volumes:
+        - name: config # Volume name
+          configMap:
+            name: prometheus-config # ConfigMap ref

@@ -1,0 +1,29 @@
+apiVersion: v1 # Kubernetes API version
+kind: ServiceAccount # Resource type
+metadata: # Object metadata
+  name: prometheus # ServiceAccount name
+  namespace: monitoring # Target namespace
+---
+apiVersion: rbac.authorization.k8s.io/v1 # RBAC API version
+kind: ClusterRole # Cluster-wide role
+metadata: # Object metadata
+  name: prometheus # Role name
+rules:
+  - apiGroups: [""] # Core API group
+    resources: [nodes, services, endpoints, pods] # Read-only resources
+    verbs: [get, list, watch] # Allowed verbs
+  - nonResourceURLs: ["/metrics"] # Non-resource endpoint
+    verbs: [get] # Allow GET only
+---
+apiVersion: rbac.authorization.k8s.io/v1 # RBAC API version
+kind: ClusterRoleBinding # Role binding
+metadata: # Object metadata
+  name: prometheus # Binding name
+subjects:
+  - kind: ServiceAccount # Subject type
+    name: prometheus # Subject name
+    namespace: monitoring # Subject namespace
+roleRef:
+  kind: ClusterRole # Referenced role type
+  name: prometheus # Referenced role name
+  apiGroup: rbac.authorization.k8s.io # RBAC API group
