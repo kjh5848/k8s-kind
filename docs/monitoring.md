@@ -173,8 +173,7 @@ Grafana 기본 로그인:
 
 ```mermaid
 flowchart LR
-  K[Kubernetes] --> P[Prometheus]
-  P --> G[Grafana]
+  P[Prometheus] -->|k8s API discovery| K[Kubernetes API]
   P -->|scrape /metrics| PODS[Pods with annotations]
-  G -->|query| P
+  G[Grafana] -->|query| P
 ```
